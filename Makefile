@@ -27,5 +27,5 @@ matrix:
 
 ## test: run a single test suite  (SUITE=pods)
 test:
-	@test -n "$(SUITE)" || { echo "usage: make test SUITE=<name>"; exit 1; }
+	@test -n "$(SUITE)" || { echo "usage: make test SUITE=<name>  (run 'make matrix' to list suites)"; exit 1; }
 	kubectl kuttl test --config tests/e2e/$(SUITE)/kuttl-test.yaml

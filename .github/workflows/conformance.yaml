@@ -17,12 +17,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - id: gen
-        run: |
-          suites=$(ls -d tests/e2e/*/kuttl-test.yaml \
-            | xargs -n1 dirname \
-            | xargs -n1 basename \
-            | jq -Rnc '[inputs]')
-          echo "suites=${suites}" >> "$GITHUB_OUTPUT"
+        run: echo "suites=$(make matrix)" >> "$GITHUB_OUTPUT"
 
   # ── run each suite in parallel ────────────────────────────────────
   test:
