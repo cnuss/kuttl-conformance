@@ -1,0 +1,38 @@
+name: Conformance Tests
+
+on:
+  pull_request:
+    branches: ["*"]
+
+permissions:
+  contents: read
+
+jobs:
+  # ── discover test suites ──────────────────────────────────────────
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      suites: ${{ steps.gen.outputs.suites }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: gen
+        run: eval make matrix
+
+  # ── run each suite in parallel ────────────────────────────────────
+  test:
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJson(needs.matrix.outputs.suites) }}
+    name: ${{ matrix.suite }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+
+      - name: Run ${{ matrix.suite }} suite
+        run: make test SUITE=${{ matrix.suite }}

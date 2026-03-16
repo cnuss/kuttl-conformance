@@ -98,7 +98,8 @@ Declarative end-to-end tests for core Kubernetes functionality using [KUTTL](htt
 ## Prerequisites
 
 - `kubectl` configured with cluster access
-- [kuttl](https://kuttl.dev/) v0.25+ installed
+- [krew](https://krew.sigs.k8s.io/) (kubectl plugin manager) — installed automatically if needed by `make install-kuttl`
+- [kuttl](https://kuttl.dev/) v0.25+ — installed via `kubectl krew install kuttl`
 - A running Kubernetes cluster (Kind, k3s, minikube, etc.)
 
 ## Running Tests
