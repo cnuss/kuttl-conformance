@@ -1,0 +1,4 @@
+kubeconfig
+*.swp
+*.swo
+.DS_Store
