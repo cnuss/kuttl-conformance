@@ -1,0 +1,46 @@
+name: Conformance Tests
+
+on:
+  pull_request:
+    branches: ["*"]
+
+permissions:
+  contents: read
+
+jobs:
+  # ── discover test suites ──────────────────────────────────────────
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      suites: ${{ steps.gen.outputs.suites }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: gen
+        run: |
+          suites=$(ls -d tests/e2e/*/kuttl-test.yaml \
+            | xargs -n1 dirname \
+            | xargs -n1 basename \
+            | jq -Rnc '[inputs]')
+          echo "suites=${suites}" >> "$GITHUB_OUTPUT"
+
+  # ── run each suite in parallel ────────────────────────────────────
+  test:
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: ${{ fromJson(needs.matrix.outputs.suites) }}
+    name: ${{ matrix.suite }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+
+      - name: Install kuttl
+        run: make install-kuttl
+
+      - name: Run ${{ matrix.suite }} suite
+        run: make test SUITE=${{ matrix.suite }}
