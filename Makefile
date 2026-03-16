@@ -20,10 +20,12 @@ install-kuttl: install-krew
 	@command -v kubectl-kuttl >/dev/null 2>&1 || kubectl krew install kuttl
 
 ## matrix: emit a JSON list of test-suite names found under tests/e2e/*
+##         writes to $GITHUB_OUTPUT when running in GitHub Actions
 matrix:
 	@suites=$$(ls -d tests/e2e/*/kuttl-test.yaml 2>/dev/null | xargs -n1 dirname | xargs -n1 basename | jq -Rnc '[inputs]'); \
 	if [ "$$suites" = "[]" ]; then echo "error: no test suites found" >&2; exit 1; fi; \
-	echo "$$suites"
+	echo "$$suites"; \
+	if [ -n "$$GITHUB_OUTPUT" ]; then echo "suites=$$suites" >> "$$GITHUB_OUTPUT"; fi
 
 ## test: run a single test suite  (SUITE=pods)
 test:

@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - id: gen
-        run: echo "suites=$(make matrix)" >> "$GITHUB_OUTPUT"
+        run: eval make matrix
 
   # ── run each suite in parallel ────────────────────────────────────
   test:
