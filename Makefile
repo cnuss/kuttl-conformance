@@ -28,6 +28,6 @@ matrix:
 	if [ -n "$$GITHUB_OUTPUT" ]; then echo "suites=$$suites" >> "$$GITHUB_OUTPUT"; fi
 
 ## test: run a single test suite  (SUITE=pods)
-test:
+test: install-kuttl
 	@test -n "$(SUITE)" || { echo "usage: make test SUITE=<name>  (run 'make matrix' to list suites)"; exit 1; }
 	kubectl kuttl test --config tests/e2e/$(SUITE)/kuttl-test.yaml

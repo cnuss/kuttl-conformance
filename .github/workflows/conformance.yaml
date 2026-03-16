@@ -34,10 +34,5 @@ jobs:
       - name: Create Kind cluster
         uses: helm/kind-action@v1
 
-      - name: Install kuttl
-        run: |
-          make install-kuttl
-          echo "${KREW_ROOT:-$HOME/.krew}/bin" >> "$GITHUB_PATH"
-
       - name: Run ${{ matrix.suite }} suite
         run: make test SUITE=${{ matrix.suite }}
