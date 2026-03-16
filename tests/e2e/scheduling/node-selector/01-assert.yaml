@@ -1,8 +1,14 @@
 apiVersion: kuttl.dev/v1beta1
 kind: TestAssert
 timeout: 30
-commands:
-  - script: |
-      set -e
-      phase=$(kubectl get pod node-selector-nomatch -n $NAMESPACE -o jsonpath='{.status.phase}')
-      test "$phase" = "Pending"
+collectors:
+  - type: pod
+    pod: node-selector-nomatch
+    tail: 20
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-selector-nomatch
+status:
+  phase: Pending

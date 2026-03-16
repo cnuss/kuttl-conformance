@@ -5,25 +5,17 @@ collectors:
   - type: pod
     pod: labeled-pod
     tail: 20
-commands:
-  - script: |
-      set -e
-      # Verify labels via jsonpath
-      app=$(kubectl get pod labeled-pod -n $NAMESPACE -o jsonpath='{.metadata.labels.app}')
-      test "$app" = "labeled-pod"
-      env=$(kubectl get pod labeled-pod -n $NAMESPACE -o jsonpath='{.metadata.labels.env}')
-      test "$env" = "test"
-      tier=$(kubectl get pod labeled-pod -n $NAMESPACE -o jsonpath='{.metadata.labels.tier}')
-      test "$tier" = "frontend"
-      # Verify annotations via jsonpath
-      desc=$(kubectl get pod labeled-pod -n $NAMESPACE -o jsonpath='{.metadata.annotations.description}')
-      test "$desc" = "a test pod for label and annotation verification"
-      owner=$(kubectl get pod labeled-pod -n $NAMESPACE -o jsonpath='{.metadata.annotations.owner}')
-      test "$owner" = "kuttl-conformance"
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: labeled-pod
+  labels:
+    app: labeled-pod
+    env: test
+    tier: frontend
+  annotations:
+    description: a test pod for label and annotation verification
+    owner: kuttl-conformance
 status:
   phase: Running
