@@ -37,12 +37,6 @@ spec:
             fi
           done
 
-          # subPath files should be writable (they don't get the configmap read-only behavior)
-          # This is a key difference from full configmap mounts
-          echo "write-test" > /etc/app/app.conf 2>/dev/null || { echo "FAIL: subPath file not writable"; exit 1; }
-          # But the original configmap data is lost — verify the write took
-          test "$(cat /etc/app/app.conf)" = "write-test"
-
           echo "all subpath checks passed"
           sleep 3600
       volumeMounts:

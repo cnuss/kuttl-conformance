@@ -11,7 +11,13 @@ commands:
       kubectl exec subpath-pod -n $NAMESPACE -- test -f /etc/app/app.conf
       kubectl exec subpath-pod -n $NAMESPACE -- test -f /etc/app/db.conf
       kubectl exec subpath-pod -n $NAMESPACE -- test -f /etc/app/logging.conf
-      # Count files inside the container to avoid kubectl output artifacts
       file_count=$(kubectl exec subpath-pod -n $NAMESPACE -- sh -c 'ls /etc/app/ | wc -l')
       file_count=$(echo "$file_count" | tr -d '[:space:]')
       test "$file_count" -eq 3 || { echo "FAIL: expected 3 files, found $file_count"; kubectl exec subpath-pod -n $NAMESPACE -- ls -la /etc/app/; exit 1; }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: subpath-pod
+status:
+  phase: Running
