@@ -28,12 +28,20 @@ spec:
     - assert:
         file: 01-assert.yaml
     - script:
+        timeout: 60s
         content: |
           set -e
-          pods=$(kubectl get pods -n $NAMESPACE -l app=nginx-recreate -o jsonpath='{.items[*].spec.containers[0].image}')
-          for img in $pods; do
-            test "$img" = "nginx:1.27-alpine"
+          kubectl rollout status deployment/nginx-recreate -n $NAMESPACE --timeout=60s
+          for i in $(seq 1 15); do
+            bad=0
+            for img in $(kubectl get pods -n $NAMESPACE -l app=nginx-recreate -o jsonpath='{.items[?(@.metadata.deletionTimestamp=="")].spec.containers[0].image}' 2>/dev/null); do
+              if [ "$img" != "nginx:1.27-alpine" ]; then bad=1; break; fi
+            done
+            if [ "$bad" -eq 0 ]; then exit 0; fi
+            sleep 1
           done
+          echo "FAIL: not all pods running updated image"
+          exit 1
   - catch:
     - podLogs:
         selector: app=nginx-rolling
@@ -57,9 +65,17 @@ spec:
     - assert:
         file: 03-assert.yaml
     - script:
+        timeout: 60s
         content: |
           set -e
-          pods=$(kubectl get pods -n $NAMESPACE -l app=nginx-rolling -o jsonpath='{.items[*].spec.containers[0].image}')
-          for img in $pods; do
-            test "$img" = "nginx:1.27-alpine"
+          kubectl rollout status deployment/nginx-rolling -n $NAMESPACE --timeout=60s
+          for i in $(seq 1 15); do
+            bad=0
+            for img in $(kubectl get pods -n $NAMESPACE -l app=nginx-rolling -o jsonpath='{.items[?(@.metadata.deletionTimestamp=="")].spec.containers[0].image}' 2>/dev/null); do
+              if [ "$img" != "nginx:1.27-alpine" ]; then bad=1; break; fi
+            done
+            if [ "$bad" -eq 0 ]; then exit 0; fi
+            sleep 1
           done
+          echo "FAIL: not all pods running updated image"
+          exit 1

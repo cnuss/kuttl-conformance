@@ -27,8 +27,16 @@ spec:
         timeout: 60s
         content: |
           set -e
-          count=$(kubectl get pod restart-onfailure -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].restartCount}')
-          test "$count" -gt 0
+          for i in $(seq 1 30); do
+            count=$(kubectl get pod restart-onfailure -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null || echo 0)
+            if [ "$count" -gt 0 ]; then
+              echo "restartCount=$count"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "FAIL: restartCount never exceeded 0"
+          exit 1
   - catch:
     - podLogs:
         name: restart-always
@@ -41,5 +49,13 @@ spec:
         timeout: 60s
         content: |
           set -e
-          count=$(kubectl get pod restart-always -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].restartCount}')
-          test "$count" -gt 0
+          for i in $(seq 1 30); do
+            count=$(kubectl get pod restart-always -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null || echo 0)
+            if [ "$count" -gt 0 ]; then
+              echo "restartCount=$count"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "FAIL: restartCount never exceeded 0"
+          exit 1

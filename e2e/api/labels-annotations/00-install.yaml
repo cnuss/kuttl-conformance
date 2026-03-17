@@ -10,6 +10,7 @@ metadata:
     description: "a test pod for label and annotation verification"
     owner: "chainsaw-conformance"
 spec:
+  terminationGracePeriodSeconds: 1
   containers:
     - name: busybox
       image: busybox:1.37

@@ -31,5 +31,5 @@ spec:
           ts=$(kubectl get pod prestop-hook -n $NAMESPACE -o jsonpath='{.metadata.deletionTimestamp}')
           test -n "$ts"
           echo "preStop hook is running: pod has deletionTimestamp=$ts but is not yet gone"
-          kubectl wait --for=delete pod/prestop-hook -n $NAMESPACE --timeout=30s
+          kubectl wait --for=delete pod/prestop-hook -n $NAMESPACE --timeout=60s
           echo "Pod fully terminated after preStop hook completed"

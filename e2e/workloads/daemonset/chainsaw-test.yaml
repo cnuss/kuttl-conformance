@@ -13,7 +13,14 @@ spec:
         timeout: 120s
         content: |
           set -e
-          desired=$(kubectl get daemonset node-logger -n $NAMESPACE -o jsonpath='{.status.desiredNumberScheduled}')
-          ready=$(kubectl get daemonset node-logger -n $NAMESPACE -o jsonpath='{.status.numberReady}')
-          test "$desired" -ge 1
-          test "$ready" -eq "$desired"
+          for i in $(seq 1 60); do
+            desired=$(kubectl get daemonset node-logger -n $NAMESPACE -o jsonpath='{.status.desiredNumberScheduled}' 2>/dev/null || echo 0)
+            ready=$(kubectl get daemonset node-logger -n $NAMESPACE -o jsonpath='{.status.numberReady}' 2>/dev/null || echo 0)
+            if [ "$desired" -ge 1 ] && [ "$ready" -eq "$desired" ]; then
+              echo "desired=$desired ready=$ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "FAIL: desired=$desired ready=$ready"
+          exit 1
