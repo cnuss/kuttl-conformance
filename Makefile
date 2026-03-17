@@ -27,7 +27,10 @@ matrix:
 	echo "$$suites"; \
 	if [ -n "$$GITHUB_OUTPUT" ]; then echo "suites=$$suites" >> "$$GITHUB_OUTPUT"; fi
 
-## test: run a single test suite  (SUITE=pods)
+## test: run tests (SUITE=pods, WHAT=dns-config, or both)
 test: install-kuttl
-	@test -n "$(SUITE)" || { echo "usage: make test SUITE=<name>  (run 'make matrix' to list suites)"; exit 1; }
-	kubectl kuttl test --config e2e/$(SUITE)/kuttl-test.yaml
+	@config=kuttl-test.yaml; \
+	if [ -n "$(SUITE)" ]; then config=e2e/$(SUITE)/kuttl-test.yaml; fi; \
+	what=""; \
+	if [ -n "$(WHAT)" ]; then what="--test $(WHAT)"; fi; \
+	kubectl kuttl test --parallel=4 --start-kind --timeout=120 --config $$config $$what

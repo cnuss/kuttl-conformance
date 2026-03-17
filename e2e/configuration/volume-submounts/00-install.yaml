@@ -12,33 +12,21 @@ kind: Pod
 metadata:
   name: subpath-pod
 spec:
+  restartPolicy: Never
   containers:
-    - name: busybox
+    - name: test
       image: busybox:1.37
       command: ["sh", "-c"]
       args:
         - |
           set -e
-
-          # Verify each subPath file has exact expected content
           test "$(cat /etc/app/app.conf)" = "app-config-content"
           test "$(cat /etc/app/db.conf)" = "db-config-content"
           test "$(cat /etc/app/logging.conf)" = "logging-config-content"
-
-          # Verify ONLY the subPath files exist — no configmap directory artifacts
-          file_count=$(ls /etc/app/ | wc -l)
-          test "$file_count" -eq 3 || { echo "FAIL: expected 3 files, found $file_count: $(ls /etc/app/)"; exit 1; }
-
-          # subPath mounts are individual files, NOT symlinks (unlike full configmap mounts)
+          test "$(ls /etc/app/ | wc -l)" -eq 3
           for f in app.conf db.conf logging.conf; do
-            if test -L "/etc/app/$f"; then
-              echo "FAIL: /etc/app/$f is a symlink — subPath should mount real files"
-              exit 1
-            fi
+            ! test -L "/etc/app/$f"
           done
-
-          echo "all subpath checks passed"
-          sleep 3600
       volumeMounts:
         - name: config
           mountPath: /etc/app/app.conf

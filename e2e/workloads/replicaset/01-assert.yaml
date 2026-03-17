@@ -6,11 +6,6 @@ collectors:
     selector: app=nginx-rs
     tail: 20
   - type: events
-commands:
-  - script: |
-      set -e
-      ready=$(kubectl get replicaset nginx-rs -n $NAMESPACE -o jsonpath='{.status.readyReplicas}')
-      test "$ready" -eq 5
 ---
 apiVersion: apps/v1
 kind: ReplicaSet

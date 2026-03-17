@@ -1,20 +1,6 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: pod-with-token
-    tail: 20
-commands:
-  - script: |
-      set -e
-      kubectl exec pod-with-token -n $NAMESPACE -- test -f /var/run/secrets/kubernetes.io/serviceaccount/token
-      kubectl exec pod-with-token -n $NAMESPACE -- test -f /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      kubectl exec pod-with-token -n $NAMESPACE -- test -f /var/run/secrets/kubernetes.io/serviceaccount/namespace
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: pod-with-token
 status:
-  phase: Running
+  phase: Succeeded

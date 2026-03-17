@@ -1,22 +1,6 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: pod-no-token
-    tail: 20
-commands:
-  - script: |
-      set -e
-      if kubectl exec pod-no-token -n $NAMESPACE -- test -f /var/run/secrets/kubernetes.io/serviceaccount/token 2>/dev/null; then
-        echo "ERROR: token file should not exist"
-        exit 1
-      fi
-      echo "Confirmed: token is not mounted"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: pod-no-token
 status:
-  phase: Running
+  phase: Succeeded

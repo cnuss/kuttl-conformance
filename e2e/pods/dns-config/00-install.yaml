@@ -2,13 +2,20 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: dns-custom
-  labels:
-    app: dns-custom
 spec:
+  restartPolicy: Never
   containers:
-    - name: busybox
+    - name: test
       image: busybox:1.37
-      command: ["sh", "-c", "sleep 3600"]
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          resolv=$(cat /etc/resolv.conf)
+          echo "$resolv" | grep -q "8.8.8.8"
+          echo "$resolv" | grep -q "custom.search.domain"
+          echo "$resolv" | grep -q "ndots:3"
+          echo "$resolv" | grep -q "timeout:2"
   dnsConfig:
     nameservers:
       - 8.8.8.8
@@ -24,14 +31,21 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: dns-none
-  labels:
-    app: dns-none
 spec:
-  containers:
-    - name: busybox
-      image: busybox:1.37
-      command: ["sh", "-c", "sleep 3600"]
+  restartPolicy: Never
   dnsPolicy: None
+  containers:
+    - name: test
+      image: busybox:1.37
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          resolv=$(cat /etc/resolv.conf)
+          echo "$resolv" | grep -q "1.1.1.1"
+          echo "$resolv" | grep -q "8.8.4.4"
+          echo "$resolv" | grep -q "manual.search.local"
+          echo "$resolv" | grep -q "ndots:5"
   dnsConfig:
     nameservers:
       - 1.1.1.1

@@ -1,21 +1,6 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: sc-nonroot
-    tail: 20
-commands:
-  - script: |
-      set -e
-      uid=$(kubectl exec sc-nonroot -n $NAMESPACE -- id -u)
-      test "$uid" = "1000"
-      # Confirm not running as root
-      test "$uid" != "0"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: sc-nonroot
 status:
-  phase: Running
+  phase: Succeeded

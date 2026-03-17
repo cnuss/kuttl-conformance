@@ -3,4 +3,4 @@ kind: Pod
 metadata:
   name: subpath-pod
 status:
-  phase: Running
+  phase: Succeeded

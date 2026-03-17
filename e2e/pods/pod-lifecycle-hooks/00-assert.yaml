@@ -1,18 +1,6 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: poststart-hook
-    tail: 20
-commands:
-  - script: |
-      set -e
-      kubectl exec poststart-hook -n $NAMESPACE -- test -f /tmp/poststart-done
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: poststart-hook
 status:
-  phase: Running
+  phase: Succeeded

@@ -9,8 +9,15 @@ kind: Pod
 metadata:
   name: pod-with-token
 spec:
+  restartPolicy: Never
   serviceAccountName: sa-with-token
   containers:
-    - name: busybox
+    - name: test
       image: busybox:1.37
-      command: ["sh", "-c", "sleep 3600"]
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          test -f /var/run/secrets/kubernetes.io/serviceaccount/token
+          test -f /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          test -f /var/run/secrets/kubernetes.io/serviceaccount/namespace

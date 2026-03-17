@@ -1,35 +1,13 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: init-single
-    tail: 20
-  - type: pod
-    pod: init-multi
-    tail: 20
-commands:
-  - script: |
-      set -e
-      result=$(kubectl exec init-single -n $NAMESPACE -- cat /work/init-message)
-      test "$result" = "hello-from-init"
-  - script: |
-      set -e
-      file1=$(kubectl exec init-multi -n $NAMESPACE -- cat /work/file-1)
-      test "$file1" = "content-from-init-1"
-      file2=$(kubectl exec init-multi -n $NAMESPACE -- cat /work/file-2)
-      test "$file2" = "content-from-init-2"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: init-single
 status:
-  phase: Running
+  phase: Succeeded
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: init-multi
 status:
-  phase: Running
+  phase: Succeeded

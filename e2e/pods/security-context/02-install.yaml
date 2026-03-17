@@ -2,13 +2,17 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: sc-nonroot
-  labels:
-    app: sc-nonroot
 spec:
+  restartPolicy: Never
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
   containers:
-    - name: busybox
+    - name: test
       image: busybox:1.37
-      command: ["sh", "-c", "sleep 3600"]
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          test "$(id -u)" = "1000"
+          test "$(id -u)" != "0"

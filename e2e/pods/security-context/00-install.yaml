@@ -2,17 +2,23 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: sc-user-group
-  labels:
-    app: sc-user-group
 spec:
+  restartPolicy: Never
   securityContext:
     runAsUser: 1000
     runAsGroup: 3000
     fsGroup: 2000
   containers:
-    - name: busybox
+    - name: test
       image: busybox:1.37
-      command: ["sh", "-c", "sleep 3600"]
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          test "$(id -u)" = "1000"
+          test "$(id -g)" = "3000"
+          touch /data/testfile
+          test "$(stat -c %g /data/testfile)" = "2000"
       volumeMounts:
         - name: data
           mountPath: /data

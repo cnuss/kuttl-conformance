@@ -1,19 +1,6 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: pod-projected-token
-    tail: 20
-commands:
-  - script: |
-      set -e
-      kubectl exec pod-projected-token -n $NAMESPACE -- test -f /var/run/secrets/custom/custom-token
-      echo "Confirmed: projected token exists at custom path"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: pod-projected-token
 status:
-  phase: Running
+  phase: Succeeded

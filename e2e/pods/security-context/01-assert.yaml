@@ -1,24 +1,6 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: sc-readonly-root
-    tail: 20
-commands:
-  - script: |
-      set -e
-      # Writing to root filesystem should fail
-      if kubectl exec sc-readonly-root -n $NAMESPACE -- sh -c "touch /testfile" 2>/dev/null; then
-        echo "FAIL: write to read-only root should have failed"
-        exit 1
-      fi
-      # Writing to emptyDir should succeed
-      kubectl exec sc-readonly-root -n $NAMESPACE -- sh -c "touch /tmp/writable/testfile"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: sc-readonly-root
 status:
-  phase: Running
+  phase: Succeeded

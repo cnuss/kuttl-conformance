@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   name: shared-volume-pod
 spec:
+  restartPolicy: Never
   initContainers:
     - name: writer
       image: busybox:1.37
@@ -10,15 +11,9 @@ spec:
       args:
         - |
           set -e
-
-          # Verify emptyDir starts clean
           count=$(ls -a /shared | grep -v '^\.\.\?$' | wc -l)
-          test "$count" -eq 0 || { echo "FAIL: shared volume not empty at init, found: $(ls -a /shared)"; exit 1; }
-
-          # Write known data
+          test "$count" -eq 0
           echo "shared-data-from-init" > /shared/data.txt
-
-          # Write a checksum so consumers can verify integrity
           sha256sum /shared/data.txt > /shared/data.txt.sha256
       volumeMounts:
         - name: shared
@@ -30,18 +25,19 @@ spec:
       args:
         - |
           set -e
-
-          # Verify init container's data survived
-          test -f /shared/data.txt || { echo "FAIL: init data missing"; exit 1; }
+          # Verify init data
           test "$(cat /shared/data.txt)" = "shared-data-from-init"
+          cd /shared && sha256sum -c data.txt.sha256
 
-          # Verify data integrity via checksum
-          cd /shared && sha256sum -c data.txt.sha256 || { echo "FAIL: data corrupted"; exit 1; }
-
-          # Verify we can write — shared volume is not read-only
+          # Signal to sidecar
           echo "reader-was-here" > /shared/reader.txt
 
-          sleep 3600
+          # Wait for sidecar's signal
+          for i in $(seq 1 30); do
+            test -f /shared/sidecar.txt && break
+            sleep 1
+          done
+          test "$(cat /shared/sidecar.txt)" = "sidecar-was-here"
       volumeMounts:
         - name: shared
           mountPath: /shared
@@ -51,21 +47,18 @@ spec:
       args:
         - |
           set -e
+          # Verify init data
+          test "$(cat /shared/data.txt)" = "shared-data-from-init"
 
-          # Wait for reader to write its marker
-          for i in $(seq 1 10); do
+          # Signal to reader
+          echo "sidecar-was-here" > /shared/sidecar.txt
+
+          # Wait for reader's signal
+          for i in $(seq 1 30); do
             test -f /shared/reader.txt && break
             sleep 1
           done
-
-          # Verify cross-container visibility — both init and reader data visible
-          test "$(cat /shared/data.txt)" = "shared-data-from-init"
           test "$(cat /shared/reader.txt)" = "reader-was-here"
-
-          # Verify sidecar can also write
-          echo "sidecar-was-here" > /shared/sidecar.txt
-
-          sleep 3600
       volumeMounts:
         - name: shared
           mountPath: /shared

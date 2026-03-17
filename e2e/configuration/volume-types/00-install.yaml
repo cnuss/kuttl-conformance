@@ -23,8 +23,9 @@ metadata:
   annotations:
     test-annotation: volume-types-test
 spec:
+  restartPolicy: Never
   containers:
-    - name: busybox
+    - name: test
       image: busybox:1.37
       command: ["sh", "-c"]
       args:
@@ -33,56 +34,39 @@ spec:
 
           # === emptyDir: must start truly empty ===
           count=$(ls -a /data/empty | grep -v '^\.\.\?$' | wc -l)
-          test "$count" -eq 0 || { echo "FAIL: emptyDir not empty, found $count items: $(ls -a /data/empty)"; exit 1; }
+          test "$count" -eq 0
           echo "emptydir-content" > /data/empty/testfile
           test "$(cat /data/empty/testfile)" = "emptydir-content"
-          # Verify writable
           echo "overwrite" > /data/empty/testfile
           test "$(cat /data/empty/testfile)" = "overwrite"
 
           # === configMap: exact content, read-only, no extras ===
           test "$(cat /data/config/config.txt)" = "configmap-content"
-          config_count=$(ls /data/config | wc -l)
-          test "$config_count" -eq 1 || { echo "FAIL: configmap has $config_count files, expected 1"; exit 1; }
-          if touch /data/config/rogue 2>/dev/null; then
-            echo "FAIL: configmap mount is writable"; exit 1
-          fi
+          test "$(ls /data/config | wc -l)" -eq 1
+          ! touch /data/config/rogue 2>/dev/null
 
           # === secret: exact content, read-only enforced ===
           test "$(cat /data/secret/secret.txt)" = "secret-content"
-          secret_count=$(ls /data/secret | wc -l)
-          test "$secret_count" -eq 1 || { echo "FAIL: secret has $secret_count files, expected 1"; exit 1; }
-          if echo "tampered" > /data/secret/secret.txt 2>/dev/null; then
-            echo "FAIL: secret mount is writable"; exit 1
-          fi
+          test "$(ls /data/secret | wc -l)" -eq 1
+          ! echo "tampered" > /data/secret/secret.txt 2>/dev/null
 
-          # === downwardAPI: verify labels and annotations are current ===
+          # === downwardAPI: verify labels and annotations ===
           grep -q 'app="volume-checker"' /data/downward/labels
           grep -q 'test-label="volume-types"' /data/downward/labels
           grep -q 'test-annotation="volume-types-test"' /data/downward/annotations
-          # Verify no write
-          if touch /data/downward/rogue 2>/dev/null; then
-            echo "FAIL: downwardAPI mount is writable"; exit 1
-          fi
+          ! touch /data/downward/rogue 2>/dev/null
 
-          # === projected: all sources combined, correct content ===
+          # === projected: all sources combined ===
           test "$(cat /data/projected/config.txt)" = "configmap-content"
           test "$(cat /data/projected/secret.txt)" = "secret-content"
           grep -q 'app="volume-checker"' /data/projected/labels
-          if touch /data/projected/rogue 2>/dev/null; then
-            echo "FAIL: projected mount is writable"; exit 1
-          fi
+          ! touch /data/projected/rogue 2>/dev/null
 
-          # === cross-mount isolation: writing to emptyDir doesn't appear in others ===
+          # === cross-mount isolation ===
           echo "leak-test" > /data/empty/leak
           for dir in config secret downward projected; do
-            if test -f "/data/$dir/leak" 2>/dev/null; then
-              echo "FAIL: emptyDir write leaked into /data/$dir"; exit 1
-            fi
+            ! test -f "/data/$dir/leak" 2>/dev/null
           done
-
-          echo "all volume checks passed"
-          sleep 3600
       volumeMounts:
         - name: empty
           mountPath: /data/empty
