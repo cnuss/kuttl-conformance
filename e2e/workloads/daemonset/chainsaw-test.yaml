@@ -10,12 +10,15 @@ spec:
     - apply:
         file: 00-install.yaml
     - assert:
-        timeout: 60s
         resource:
           apiVersion: apps/v1
           kind: DaemonSet
           metadata:
             name: node-logger
-          status:
-            desiredNumberScheduled: 1
-            numberReady: 1
+    - script:
+        content: |
+          set -e
+          desired=$(kubectl get daemonset node-logger -n $NAMESPACE -o jsonpath='{.status.desiredNumberScheduled}')
+          ready=$(kubectl get daemonset node-logger -n $NAMESPACE -o jsonpath='{.status.numberReady}')
+          test "$desired" -ge 1
+          test "$ready" -eq "$desired"

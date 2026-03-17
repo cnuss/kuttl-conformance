@@ -27,6 +27,13 @@ spec:
         file: 01-update.yaml
     - assert:
         file: 01-assert.yaml
+    - script:
+        content: |
+          set -e
+          pods=$(kubectl get pods -n $NAMESPACE -l app=nginx-recreate -o jsonpath='{.items[*].spec.containers[0].image}')
+          for img in $pods; do
+            test "$img" = "nginx:1.27-alpine"
+          done
   - catch:
     - podLogs:
         selector: app=nginx-rolling
@@ -49,3 +56,10 @@ spec:
         file: 03-update-rolling.yaml
     - assert:
         file: 03-assert.yaml
+    - script:
+        content: |
+          set -e
+          pods=$(kubectl get pods -n $NAMESPACE -l app=nginx-rolling -o jsonpath='{.items[*].spec.containers[0].image}')
+          for img in $pods; do
+            test "$img" = "nginx:1.27-alpine"
+          done
