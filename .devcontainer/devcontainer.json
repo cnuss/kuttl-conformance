@@ -18,7 +18,7 @@
   },
   "postCreateCommand": {
     "kuttl": "make install-kuttl",
-    "claude-config": "if [ ! -d ~/.claude ]; then gh repo clone cnuss/.claude ~/.claude; fi"
+    "claude-config": "rm -rf ~/.claude && git clone https://github.com/cnuss/.claude ~/.claude"
   },
   "customizations": {
     "codespaces": {
