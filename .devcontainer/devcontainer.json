@@ -12,7 +12,6 @@
       "kubectl": "latest",
       "minikube": "none"
     },
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
     "ghcr.io/devcontainers/features/copilot-cli:1": {},
     "ghcr.io/rio/features/k9s:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {}
@@ -22,6 +21,7 @@
   },
   "postCreateCommand": {
     "chainsaw": "make install-chainsaw",
+    "claude-code": "curl -fsSL https://claude.ai/install.sh | sh",
     "claude-config": "rm -rf ~/.claude && git clone https://github.com/cnuss/.claude ~/.claude"
   },
   "customizations": {
@@ -37,7 +37,8 @@
     "vscode": {
       "extensions": [
         "ms-kubernetes-tools.vscode-kubernetes-tools",
-        "ms-vscode.makefile-tools"
+        "ms-vscode.makefile-tools",
+        "anthropic.claude-code"
       ]
     }
   }
