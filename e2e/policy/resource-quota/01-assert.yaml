@@ -8,4 +8,4 @@ commands:
   - script: |
       set -e
       used_pods=$(kubectl get resourcequota test-quota -n $NAMESPACE -o jsonpath='{.status.used.pods}')
-      test "$used_pods" -ge 1
+      test "$used_pods" -eq 1

@@ -13,4 +13,4 @@ commands:
   - script: |
       set -e
       addr_count=$(kubectl get endpoints nginx-nodeport -n $NAMESPACE -o jsonpath='{.subsets[0].addresses[*].ip}' | wc -w)
-      test "$addr_count" -ge 1
+      test "$addr_count" -eq 1
