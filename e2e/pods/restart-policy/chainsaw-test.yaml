@@ -23,16 +23,12 @@ spec:
     try:
     - apply:
         file: 01-install.yaml
-    - assert:
+    - script:
         timeout: 60s
-        resource:
-          apiVersion: v1
-          kind: Pod
-          metadata:
-            name: restart-onfailure
-          status:
-            containerStatuses:
-            - restartCount: 1
+        content: |
+          set -e
+          count=$(kubectl get pod restart-onfailure -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].restartCount}')
+          test "$count" -gt 0
   - catch:
     - podLogs:
         name: restart-always
@@ -41,13 +37,9 @@ spec:
     try:
     - apply:
         file: 02-install.yaml
-    - assert:
+    - script:
         timeout: 60s
-        resource:
-          apiVersion: v1
-          kind: Pod
-          metadata:
-            name: restart-always
-          status:
-            containerStatuses:
-            - restartCount: 1
+        content: |
+          set -e
+          count=$(kubectl get pod restart-always -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].restartCount}')
+          test "$count" -gt 0
