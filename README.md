@@ -1,6 +1,6 @@
-# Kubernetes KUTTL Conformance Tests
+# Kubernetes Chainsaw Conformance Tests
 
-Declarative end-to-end tests for core Kubernetes functionality using [KUTTL](https://kuttl.dev/) v0.25.
+Declarative end-to-end tests for core Kubernetes functionality using [Chainsaw](https://kyverno.github.io/chainsaw/) (Kyverno).
 
 ## Test Suites
 
@@ -98,39 +98,38 @@ Declarative end-to-end tests for core Kubernetes functionality using [KUTTL](htt
 ## Prerequisites
 
 - `kubectl` configured with cluster access
-- [krew](https://krew.sigs.k8s.io/) (kubectl plugin manager) — installed automatically if needed by `make install-kuttl`
-- [kuttl](https://kuttl.dev/) v0.25+ — installed via `kubectl krew install kuttl`
+- [chainsaw](https://kyverno.github.io/chainsaw/) v0.2.14+ — installed automatically by `make install-chainsaw`
 - A running Kubernetes cluster (Kind, k3s, minikube, etc.)
 
 ## Running Tests
 
-Run all tests with an ephemeral Kind cluster:
+Run all tests (creates a Kind cluster if needed):
 
 ```bash
-kubectl kuttl test --config kuttl-test.yaml --start-kind
+make test
 ```
 
 Run a single suite:
 
 ```bash
-kubectl kuttl test --config e2e/pods/kuttl-test.yaml --start-kind
+make test SUITE=pods
 ```
 
 Run a single test:
 
 ```bash
-kubectl kuttl test --config kuttl-test.yaml --start-kind --test pod-lifecycle
+make test SUITE=pods WHAT=pod-lifecycle
 ```
 
 Run against an existing cluster:
 
 ```bash
-kubectl kuttl test --config kuttl-test.yaml
+make test KIND=false
 ```
 
 ## Design Principles
 
-- **Self-contained**: Each test uses KUTTL's automatic namespace management. No cross-test dependencies.
+- **Self-contained**: Each test uses Chainsaw's automatic namespace management. No cross-test dependencies.
 - **Lightweight images**: Tests use `busybox:1.37` and `nginx:1.27`.
 - **Subset assertions**: Only fields that matter are asserted. No over-specification.
 - **Declarative first**: Script assertions only where YAML matching can't express the check.

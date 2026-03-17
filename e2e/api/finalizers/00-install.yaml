@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: finalized-config
   finalizers:
-    - kuttl.dev/test-finalizer
+    - chainsaw.dev/test-finalizer
 data:
   key: value

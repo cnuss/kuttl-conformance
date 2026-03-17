@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: labels-annotations
+spec:
+  steps:
+  - catch:
+    - podLogs:
+        name: labeled-pod
+        tail: 20
+    name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - assert:
+        file: 00-assert.yaml
+  - catch:
+    - podLogs:
+        name: labeled-pod
+        tail: 20
+    name: step-01
+    try:
+    - script:
+        content: |
+          set -e
+          kubectl label pod labeled-pod -n $NAMESPACE version=v1
+          kubectl annotate pod labeled-pod -n $NAMESPACE release-notes="initial release"
+    - assert:
+        file: 01-assert.yaml
+  - catch:
+    - podLogs:
+        name: labeled-pod
+        tail: 20
+    name: step-02
+    try:
+    - script:
+        content: |
+          set -e
+          # Verify pod is discoverable by various label selectors
+          count=$(kubectl get pods -n $NAMESPACE -l app=labeled-pod --no-headers | wc -l)
+          test "$count" -eq 1
+          count=$(kubectl get pods -n $NAMESPACE -l env=test,tier=frontend --no-headers | wc -l)
+          test "$count" -eq 1
+          count=$(kubectl get pods -n $NAMESPACE -l version=v1 --no-headers | wc -l)
+          test "$count" -eq 1
+    - assert:
+        file: 02-assert.yaml

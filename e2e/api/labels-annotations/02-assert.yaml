@@ -1,18 +1,9 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 30
-collectors:
-  - type: pod
-    pod: labeled-pod
-    tail: 20
----
-# Verify pod is findable by combined label selectors
 apiVersion: v1
 kind: Pod
 metadata:
   labels:
     app: labeled-pod
-    version: v1
     env: test
+    version: v1
 status:
   phase: Running

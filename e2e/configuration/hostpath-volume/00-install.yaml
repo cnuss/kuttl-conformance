@@ -25,5 +25,5 @@ spec:
   volumes:
     - name: hostpath-vol
       hostPath:
-        path: /tmp/kuttl-hostpath-test
+        path: /tmp/chainsaw-hostpath-test
         type: DirectoryOrCreate

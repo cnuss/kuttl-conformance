@@ -1,11 +1,4 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 30
-collectors:
-  - type: events
-    namespace: $NAMESPACE
----
-apiVersion: conformance.kuttl.dev/v1
+apiVersion: conformance.chainsaw.dev/v1
 kind: TestWidget
 metadata:
   name: my-widget

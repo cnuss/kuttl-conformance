@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: deployment-lifecycle
+spec:
+  steps:
+  - name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - assert:
+        file: 00-assert.yaml
+  - name: step-01
+    try:
+    - apply:
+        file: 01-scale.yaml
+    - assert:
+        file: 01-assert.yaml
+  - catch:
+    - podLogs:
+        selector: app=nginx
+        tail: 20
+    - events: {}
+    name: step-02
+    try:
+    - apply:
+        file: 02-rolling-update.yaml
+    - assert:
+        file: 02-assert.yaml

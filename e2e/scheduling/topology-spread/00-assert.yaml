@@ -1,15 +1,3 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-commands:
-  - script: |
-      set -e
-      # Verify topology spread constraint is present in pod spec
-      constraint=$(kubectl get pods -n $NAMESPACE -l app=spread-test -o jsonpath='{.items[0].spec.topologySpreadConstraints[0].topologyKey}')
-      test "$constraint" = "kubernetes.io/hostname"
-      max_skew=$(kubectl get pods -n $NAMESPACE -l app=spread-test -o jsonpath='{.items[0].spec.topologySpreadConstraints[0].maxSkew}')
-      test "$max_skew" -eq 1
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:

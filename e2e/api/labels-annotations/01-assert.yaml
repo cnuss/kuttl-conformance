@@ -1,18 +1,10 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 30
-collectors:
-  - type: pod
-    pod: labeled-pod
-    tail: 20
----
 apiVersion: v1
 kind: Pod
 metadata:
-  name: labeled-pod
+  annotations:
+    owner: chainsaw-conformance
+    release-notes: initial release
   labels:
     app: labeled-pod
     version: v1
-  annotations:
-    owner: kuttl-conformance
-    release-notes: initial release
+  name: labeled-pod

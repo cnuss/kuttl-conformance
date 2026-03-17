@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: headless-service
+spec:
+  steps:
+  - name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - assert:
+        file: 00-assert.yaml
+  - catch:
+    - events:
+        namespace: $NAMESPACE
+    name: step-01
+    try:
+    - script:
+        content: |
+          set -e
+          addr_count=$(kubectl get endpoints nginx-headless -n $NAMESPACE -o jsonpath='{.subsets[0].addresses[*].ip}' | wc -w)
+          test "$addr_count" -eq 2

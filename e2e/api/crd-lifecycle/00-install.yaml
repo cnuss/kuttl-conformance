@@ -1,9 +1,9 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: testwidgets.conformance.kuttl.dev
+  name: testwidgets.conformance.chainsaw.dev
 spec:
-  group: conformance.kuttl.dev
+  group: conformance.chainsaw.dev
   names:
     kind: TestWidget
     listKind: TestWidgetList

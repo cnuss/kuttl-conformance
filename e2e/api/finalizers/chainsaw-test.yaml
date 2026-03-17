@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: finalizers
+spec:
+  steps:
+  - catch:
+    - events:
+        namespace: $NAMESPACE
+    name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - script:
+        content: |
+          set -e
+          # Verify the finalizer is present
+          finalizers=$(kubectl get configmap finalized-config -n $NAMESPACE -o jsonpath='{.metadata.finalizers[0]}')
+          test "$finalizers" = "chainsaw.dev/test-finalizer"
+    - assert:
+        file: 00-assert.yaml
+  - catch:
+    - events:
+        namespace: $NAMESPACE
+    name: step-01
+    try:
+    - script:
+        content: |
+          set -e
+          kubectl delete configmap finalized-config -n $NAMESPACE --wait=false
+    - script:
+        content: |
+          set -e
+          # Verify the ConfigMap still exists (finalizer blocks deletion)
+          kubectl get configmap finalized-config -n $NAMESPACE
+          # Verify it has a deletionTimestamp
+          ts=$(kubectl get configmap finalized-config -n $NAMESPACE -o jsonpath='{.metadata.deletionTimestamp}')
+          test -n "$ts"
+  - name: step-02
+    try:
+    - script:
+        content: |
+          set -e
+          kubectl patch configmap finalized-config -n $NAMESPACE --type=merge -p '{"metadata":{"finalizers":[]}}'
+    - error:
+        file: 02-errors.yaml

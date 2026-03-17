@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: clusterrole-binding
+spec:
+  steps:
+  - catch:
+    - events:
+        namespace: $NAMESPACE
+    name: step-00
+    try:
+    - script:
+        content: |
+          set -e
+          cat <<EOF | kubectl apply -f -
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: ns-lister-role-$NAMESPACE
+          rules:
+            - apiGroups: [""]
+              resources: ["namespaces"]
+              verbs: ["get", "list"]
+          EOF
+    - script:
+        content: |
+          set -e
+          cat <<EOF | kubectl apply -f -
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: ns-lister-binding-$NAMESPACE
+          subjects:
+            - kind: ServiceAccount
+              name: ns-lister
+              namespace: $NAMESPACE
+          roleRef:
+            kind: ClusterRole
+            name: ns-lister-role-$NAMESPACE
+            apiGroup: rbac.authorization.k8s.io
+          EOF
+    - apply:
+        file: 00-install.yaml
+    - script:
+        content: |
+          set -e
+          kubectl get serviceaccount ns-lister -n $NAMESPACE
+          kubectl get clusterrole ns-lister-role-$NAMESPACE
+          kubectl get clusterrolebinding ns-lister-binding-$NAMESPACE
+  - catch:
+    - podLogs:
+        name: ns-lister-verifier
+        tail: 30
+    name: step-01
+    try:
+    - apply:
+        file: 01-verify-access.yaml
+    - assert:
+        file: 01-assert.yaml
+  - catch:
+    - events:
+        namespace: $NAMESPACE
+    name: step-02
+    try:
+    - script:
+        content: |
+          set -e
+          kubectl delete clusterrole ns-lister-role-$NAMESPACE --ignore-not-found
+          kubectl delete clusterrolebinding ns-lister-binding-$NAMESPACE --ignore-not-found
+    - script:
+        content: |
+          set -e
+          # Verify cluster-scoped resources are cleaned up
+          if kubectl get clusterrole ns-lister-role-$NAMESPACE 2>/dev/null; then
+            echo "ClusterRole still exists"
+            exit 1
+          fi
+          if kubectl get clusterrolebinding ns-lister-binding-$NAMESPACE 2>/dev/null; then
+            echo "ClusterRoleBinding still exists"
+            exit 1
+          fi

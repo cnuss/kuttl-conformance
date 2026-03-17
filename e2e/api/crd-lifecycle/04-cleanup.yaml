@@ -1,6 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-commands:
-  - script: |
-      set -e
-      kubectl delete crd testwidgets.conformance.kuttl.dev --ignore-not-found

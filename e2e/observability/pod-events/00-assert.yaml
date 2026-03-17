@@ -1,20 +1,3 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: event-checker
-    tail: 20
-  - type: events
-commands:
-  - script: |
-      set -e
-      events=$(kubectl get events -n $NAMESPACE --field-selector involvedObject.name=event-checker --no-headers)
-      echo "$events" | grep -q "Scheduled"
-      echo "$events" | grep -q "Pull"
-      echo "$events" | grep -q "Created"
-      echo "$events" | grep -q "Started"
----
 apiVersion: v1
 kind: Pod
 metadata:

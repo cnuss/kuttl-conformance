@@ -1,7 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-commands:
-  - script: |
-      set -e
-      kubectl label pod labeled-pod -n $NAMESPACE version=v1
-      kubectl annotate pod labeled-pod -n $NAMESPACE release-notes="initial release"

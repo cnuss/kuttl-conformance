@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: statefulset
+spec:
+  steps:
+  - catch:
+    - podLogs:
+        selector: app=nginx-sts
+        tail: 20
+    name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - assert:
+        file: 00-assert.yaml
+  - name: step-01
+    try:
+    - script:
+        content: |
+          set -e
+          # Verify ordered pod names (stable identity)
+          kubectl get pod web-0 -n $NAMESPACE -o jsonpath='{.metadata.name}' | grep -q "web-0"
+          kubectl get pod web-1 -n $NAMESPACE -o jsonpath='{.metadata.name}' | grep -q "web-1"
+          kubectl get pod web-2 -n $NAMESPACE -o jsonpath='{.metadata.name}' | grep -q "web-2"
+    - script:
+        content: |
+          set -e
+          # Verify headless service DNS records exist
+          svc_ip=$(kubectl get svc nginx-headless -n $NAMESPACE -o jsonpath='{.spec.clusterIP}')
+          test "$svc_ip" = "None"

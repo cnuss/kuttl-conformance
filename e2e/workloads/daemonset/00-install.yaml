@@ -13,6 +13,7 @@ spec:
       labels:
         app: node-logger
     spec:
+      terminationGracePeriodSeconds: 3
       tolerations:
         - operator: Exists
       containers:

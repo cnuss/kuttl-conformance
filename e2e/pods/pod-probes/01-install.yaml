@@ -5,6 +5,7 @@ metadata:
   labels:
     app: readiness-file
 spec:
+  terminationGracePeriodSeconds: 3
   containers:
     - name: busybox
       image: busybox:1.37

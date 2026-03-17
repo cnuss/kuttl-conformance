@@ -1,8 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 120
-commands:
-  - script: |
-      set -e
-      job_count=$(kubectl get jobs -n $NAMESPACE --no-headers 2>/dev/null | wc -l)
-      test "$job_count" -ge 1

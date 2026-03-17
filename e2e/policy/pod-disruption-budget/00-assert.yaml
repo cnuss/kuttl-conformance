@@ -1,20 +1,3 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 120
-collectors:
-  - type: pod
-    selector: app=nginx-pdb
-    tail: 20
-  - type: events
-commands:
-  - script: |
-      set -e
-      # Verify PDB status
-      expected=$(kubectl get pdb nginx-pdb -n $NAMESPACE -o jsonpath='{.status.expectedPods}')
-      test "$expected" -eq 3
-      allowed=$(kubectl get pdb nginx-pdb -n $NAMESPACE -o jsonpath='{.status.disruptionsAllowed}')
-      test "$allowed" -eq 1
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,3 +9,6 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: nginx-pdb
+status:
+  expectedPods: 3
+  disruptionsAllowed: 1

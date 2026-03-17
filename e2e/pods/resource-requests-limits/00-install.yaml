@@ -5,6 +5,7 @@ metadata:
   labels:
     app: resource-set
 spec:
+  terminationGracePeriodSeconds: 3
   containers:
     - name: busybox
       image: busybox:1.37

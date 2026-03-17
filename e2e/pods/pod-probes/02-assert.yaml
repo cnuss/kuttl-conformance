@@ -1,19 +1,8 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: startup-http
-    tail: 20
-commands:
-  - script: |
-      set -e
-      started=$(kubectl get pod startup-http -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].started}')
-      test "$started" = "true"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: startup-http
 status:
   phase: Running
+  containerStatuses:
+  - started: true

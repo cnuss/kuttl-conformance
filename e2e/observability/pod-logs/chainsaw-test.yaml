@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: pod-logs
+spec:
+  steps:
+  - catch:
+    - podLogs:
+        name: log-emitter
+        tail: 20
+    name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - assert:
+        file: 00-assert.yaml
+    - script:
+        content: |
+          set -e
+          logs=$(kubectl logs log-emitter -n $NAMESPACE)
+          echo "$logs" | grep -q "CHAINSAW_LOG_LINE_1: conformance test output"
+          echo "$logs" | grep -q "CHAINSAW_LOG_LINE_2: second line of output"
+          echo "$logs" | grep -q "CHAINSAW_LOG_LINE_3: final verification string"

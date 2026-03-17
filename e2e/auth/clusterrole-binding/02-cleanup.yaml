@@ -1,7 +1,0 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestStep
-commands:
-  - script: |
-      set -e
-      kubectl delete clusterrole ns-lister-role-$NAMESPACE --ignore-not-found
-      kubectl delete clusterrolebinding ns-lister-binding-$NAMESPACE --ignore-not-found

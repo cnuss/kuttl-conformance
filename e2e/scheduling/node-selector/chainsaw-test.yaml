@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: node-selector
+spec:
+  steps:
+  - name: step-00
+    try:
+    - script:
+        content: |
+          set -e
+          # Discover the actual node hostname label — works on any cluster
+          hostname=$(kubectl get nodes -o jsonpath='{.items[0].metadata.labels.kubernetes\.io/hostname}')
+          cat <<EOF | kubectl apply -n $NAMESPACE -f -
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: node-selector-match
+            labels:
+              app: node-selector-match
+          spec:
+            nodeSelector:
+              kubernetes.io/hostname: "$hostname"
+            containers:
+              - name: nginx
+                image: nginx:1.27
+          EOF
+    - assert:
+        file: 00-assert.yaml
+  - catch:
+    - podLogs:
+        name: node-selector-nomatch
+        tail: 20
+    name: step-01
+    try:
+    - apply:
+        file: 01-install.yaml
+    - assert:
+        file: 01-assert.yaml

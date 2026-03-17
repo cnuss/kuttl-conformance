@@ -1,14 +1,3 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-commands:
-  - script: |
-      set -e
-      target_node=$(kubectl get pod target -n $NAMESPACE -o jsonpath='{.spec.nodeName}')
-      affinity_node=$(kubectl get pod affinity-pod -n $NAMESPACE -o jsonpath='{.spec.nodeName}')
-      test -n "$target_node"
-      test "$target_node" = "$affinity_node"
----
 apiVersion: v1
 kind: Pod
 metadata:

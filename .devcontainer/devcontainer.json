@@ -1,5 +1,5 @@
 {
-  "name": "KUTTL Conformance",
+  "name": "Chainsaw Conformance",
   "image": "mcr.microsoft.com/devcontainers/base:bookworm",
   "hostRequirements": {
     "cpus": 4,
@@ -17,7 +17,7 @@
     "ghcr.io/rio/features/k9s:1": {}
   },
   "postCreateCommand": {
-    "kuttl": "make install-kuttl",
+    "chainsaw": "make install-chainsaw",
     "claude-config": "rm -rf ~/.claude && git clone https://github.com/cnuss/.claude ~/.claude"
   },
   "customizations": {

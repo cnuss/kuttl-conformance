@@ -12,6 +12,6 @@ spec:
       command: ["sh", "-c"]
       args:
         - |
-          echo "KUTTL_LOG_LINE_1: conformance test output"
-          echo "KUTTL_LOG_LINE_2: second line of output"
-          echo "KUTTL_LOG_LINE_3: final verification string"
+          echo "CHAINSAW_LOG_LINE_1: conformance test output"
+          echo "CHAINSAW_LOG_LINE_2: second line of output"
+          echo "CHAINSAW_LOG_LINE_3: final verification string"

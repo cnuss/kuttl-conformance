@@ -1,19 +1,8 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: readiness-file
-    tail: 20
-commands:
-  - script: |
-      set -e
-      ready=$(kubectl get pod readiness-file -n $NAMESPACE -o jsonpath='{.status.containerStatuses[0].ready}')
-      test "$ready" = "true"
----
 apiVersion: v1
 kind: Pod
 metadata:
   name: readiness-file
 status:
   phase: Running
+  containerStatuses:
+  - ready: true

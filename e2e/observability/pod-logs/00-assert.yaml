@@ -1,18 +1,3 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: log-emitter
-    tail: 20
-commands:
-  - script: |
-      set -e
-      logs=$(kubectl logs log-emitter -n $NAMESPACE)
-      echo "$logs" | grep -q "KUTTL_LOG_LINE_1: conformance test output"
-      echo "$logs" | grep -q "KUTTL_LOG_LINE_2: second line of output"
-      echo "$logs" | grep -q "KUTTL_LOG_LINE_3: final verification string"
----
 apiVersion: v1
 kind: Pod
 metadata:

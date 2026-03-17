@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: topology-spread
+spec:
+  steps:
+  - name: step-00
+    try:
+    - apply:
+        file: 00-install.yaml
+    - script:
+        content: |
+          set -e
+          # Verify topology spread constraint is present in pod spec
+          constraint=$(kubectl get pods -n $NAMESPACE -l app=spread-test -o jsonpath='{.items[0].spec.topologySpreadConstraints[0].topologyKey}')
+          test "$constraint" = "kubernetes.io/hostname"
+          max_skew=$(kubectl get pods -n $NAMESPACE -l app=spread-test -o jsonpath='{.items[0].spec.topologySpreadConstraints[0].maxSkew}')
+          test "$max_skew" -eq 1
+    - assert:
+        file: 00-assert.yaml

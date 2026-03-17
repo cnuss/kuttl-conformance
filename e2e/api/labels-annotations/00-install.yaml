@@ -8,7 +8,7 @@ metadata:
     tier: frontend
   annotations:
     description: "a test pod for label and annotation verification"
-    owner: "kuttl-conformance"
+    owner: "chainsaw-conformance"
 spec:
   containers:
     - name: nginx
