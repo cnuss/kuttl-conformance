@@ -15,6 +15,8 @@ spec:
     try:
     - apply:
         file: 01-install.yaml
+    - assert:
+        file: 01-assert.yaml
     - script:
         content: |
           set -e
@@ -22,8 +24,6 @@ spec:
           affinity_node=$(kubectl get pod affinity-pod -n $NAMESPACE -o jsonpath='{.spec.nodeName}')
           test -n "$target_node"
           test "$target_node" = "$affinity_node"
-    - assert:
-        file: 01-assert.yaml
   - name: step-02
     try:
     - apply:
