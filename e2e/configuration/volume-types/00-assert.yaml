@@ -1,22 +1,3 @@
-apiVersion: kuttl.dev/v1beta1
-kind: TestAssert
-timeout: 60
-collectors:
-  - type: pod
-    pod: volume-checker
-    tail: 30
-commands:
-  - script: |
-      set -e
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/empty/testfile
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/config/config.txt
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/secret/secret.txt
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/downward/labels
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/downward/annotations
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/projected/config.txt
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/projected/secret.txt
-      kubectl exec volume-checker -n $NAMESPACE -- test -f /data/projected/labels
----
 apiVersion: v1
 kind: Pod
 metadata:

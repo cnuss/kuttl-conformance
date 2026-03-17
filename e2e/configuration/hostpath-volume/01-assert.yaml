@@ -1,0 +1,15 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+timeout: 60
+collectors:
+  - type: pod
+    pod: hostpath-checker
+    tail: 20
+commands:
+  - script: |
+      set -e
+      kubectl exec hostpath-checker -n $NAMESPACE -- test -d /host-data
+      kubectl exec hostpath-checker -n $NAMESPACE -- test -f /host-data/testfile
+      content=$(kubectl exec hostpath-checker -n $NAMESPACE -- cat /host-data/testfile)
+      test "$content" = "overwritten"
+      kubectl exec hostpath-checker -n $NAMESPACE -- test -f /host-data/subdir/nested.txt

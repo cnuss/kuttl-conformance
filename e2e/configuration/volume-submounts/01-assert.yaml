@@ -3,31 +3,13 @@ kind: TestAssert
 timeout: 60
 collectors:
   - type: pod
-    pod: shared-volume-pod
+    pod: subpath-pod
     tail: 20
 commands:
   - script: |
       set -e
-      # Verify all three writers' data is visible from reader container
-      reader_data=$(kubectl exec shared-volume-pod -n $NAMESPACE -c reader -- cat /shared/data.txt)
-      test "$reader_data" = "shared-data-from-init"
-
-      reader_marker=$(kubectl exec shared-volume-pod -n $NAMESPACE -c reader -- cat /shared/reader.txt)
-      test "$reader_marker" = "reader-was-here"
-
-      sidecar_marker=$(kubectl exec shared-volume-pod -n $NAMESPACE -c reader -- cat /shared/sidecar.txt)
-      test "$sidecar_marker" = "sidecar-was-here"
-
-      # Verify checksum file from init is intact
-      kubectl exec shared-volume-pod -n $NAMESPACE -c reader -- sh -c "cd /shared && sha256sum -c data.txt.sha256"
-
-      # Verify all data visible from sidecar too
-      sidecar_sees_reader=$(kubectl exec shared-volume-pod -n $NAMESPACE -c sidecar -- cat /shared/reader.txt)
-      test "$sidecar_sees_reader" = "reader-was-here"
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: shared-volume-pod
-status:
-  phase: Running
+      kubectl exec subpath-pod -n $NAMESPACE -- test -f /etc/app/app.conf
+      kubectl exec subpath-pod -n $NAMESPACE -- test -f /etc/app/db.conf
+      kubectl exec subpath-pod -n $NAMESPACE -- test -f /etc/app/logging.conf
+      file_count=$(kubectl exec subpath-pod -n $NAMESPACE -- ls /etc/app/ | wc -l)
+      test "$file_count" -eq 3 || { echo "FAIL: expected 3 files, found $file_count"; exit 1; }
