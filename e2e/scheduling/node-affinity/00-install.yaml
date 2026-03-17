@@ -10,10 +10,8 @@ spec:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values:
-                  - linux
+              - key: kubernetes.io/hostname
+                operator: Exists
   containers:
     - name: nginx
       image: nginx:1.27
