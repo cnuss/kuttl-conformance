@@ -18,4 +18,5 @@ spec:
     try:
     - script:
         content: |
-          docker exec kind-control-plane rm -rf /tmp/chainsaw-hostpath-test
+          node=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
+          docker exec "$node" rm -rf /tmp/chainsaw-hostpath-test

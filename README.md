@@ -131,7 +131,7 @@ make test KIND=false
 ## Design Principles
 
 - **Self-contained**: Each test uses Chainsaw's automatic namespace management. No cross-test dependencies.
-- **Lightweight images**: Tests use `busybox:1.37`, `nginx:1.27`, and `bitnami/kubectl:1.31`.
+- **Lightweight images**: Tests use `busybox:1.37`, `nginx:1.27`, and `bitnami/kubectl`.
 - **Subset assertions**: Only fields that matter are asserted. No over-specification.
 - **Declarative first**: Script assertions only where YAML matching can't express the check.
 - **Realistic timeouts**: 60s default; individual steps override where needed.

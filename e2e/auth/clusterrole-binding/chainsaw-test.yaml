@@ -48,11 +48,6 @@ spec:
           kubectl get clusterrolebinding ns-lister-binding-$NAMESPACE
     catch:
     - events: {}
-    finally:
-    - script:
-        content: kubectl delete clusterrole ns-lister-role-$NAMESPACE --ignore-not-found
-    - script:
-        content: kubectl delete clusterrolebinding ns-lister-binding-$NAMESPACE --ignore-not-found
   - name: verify-access
     try:
     - apply:

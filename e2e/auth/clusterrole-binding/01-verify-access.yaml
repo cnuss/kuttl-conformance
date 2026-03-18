@@ -7,7 +7,9 @@ spec:
   restartPolicy: Never
   containers:
     - name: verifier
-      image: bitnami/kubectl:1.31
+      # bitnami/kubectl only publishes :latest (no versioned tags)
+      # official registry.k8s.io/kubectl is distroless (no shell)
+      image: bitnami/kubectl:latest
       command: ["sh", "-c"]
       args:
         - |

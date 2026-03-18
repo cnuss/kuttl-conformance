@@ -22,9 +22,6 @@ spec:
               kind: TestWidget
     catch:
     - events: {}
-    finally:
-    - script:
-        content: kubectl delete crd testwidgets.conformance.chainsaw.dev --ignore-not-found
   - name: create-custom-resource
     try:
     - apply:
