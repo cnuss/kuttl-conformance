@@ -38,7 +38,7 @@ Declarative end-to-end tests for core Kubernetes functionality using [Chainsaw](
 | `headless-service` | Headless service (clusterIP: None) with endpoints |
 | `endpoint-slices` | EndpointSlice population for services |
 | `network-policy` | NetworkPolicy resource creation |
-| `ingress` | Ingress resource acceptance |
+| `ingress` | Ingress resource with ingressClassName |
 
 ### Configuration (6 tests)
 
@@ -131,12 +131,15 @@ make test KIND=false
 ## Design Principles
 
 - **Self-contained**: Each test uses Chainsaw's automatic namespace management. No cross-test dependencies.
-- **Lightweight images**: Tests use `busybox:1.37` and `nginx:1.27`.
+- **Lightweight images**: Tests use `busybox:1.37`, `nginx:1.27`, and `bitnami/kubectl:1.31`.
 - **Subset assertions**: Only fields that matter are asserted. No over-specification.
 - **Declarative first**: Script assertions only where YAML matching can't express the check.
 - **Realistic timeouts**: 60s default; individual steps override where needed.
 - **Kind-compatible**: Every test passes on a standard Kind cluster with no special configuration.
 - **Portable**: No assumptions about cluster domain (`svc.cluster.local`).
+- **Descriptive steps**: Every test has a `spec.description` and descriptive step names for readable output.
+- **Cluster-scoped cleanup**: Tests creating cluster-scoped resources (ClusterRole, PriorityClass, CRD) include `finally`/`cleanup` blocks to prevent orphans on failure.
+- **CI observability**: KIND logs are automatically exported and uploaded as artifacts on test failure.
 
 ## License
 
