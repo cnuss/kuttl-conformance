@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-lifecycle-hooks
 spec:
+  description: Validates postStart and preStop lifecycle hooks execute during pod creation and termination
   steps:
-  - name: step-00
+  - name: verify-poststart-hook
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: create-prestop-pod
     try:
     - apply:
         file: 01-install.yaml
@@ -23,15 +24,21 @@ spec:
     - podLogs:
         name: prestop-hook
         tail: 20
-  - name: step-02
+  - name: verify-prestop-hook
     try:
     - script:
         content: |
           set -e
           kubectl delete pod prestop-hook -n $NAMESPACE --wait=false
-          sleep 2
-          ts=$(kubectl get pod prestop-hook -n $NAMESPACE -o jsonpath='{.metadata.deletionTimestamp}')
+          # Poll until the pod has a deletionTimestamp (preStop hook is running)
+          for i in $(seq 1 30); do
+            ts=$(kubectl get pod prestop-hook -n $NAMESPACE -o jsonpath='{.metadata.deletionTimestamp}' 2>/dev/null) || true
+            if [ -n "$ts" ]; then
+              echo "preStop hook is running: pod has deletionTimestamp=$ts but is not yet gone"
+              break
+            fi
+            sleep 1
+          done
           test -n "$ts"
-          echo "preStop hook is running: pod has deletionTimestamp=$ts but is not yet gone"
           kubectl wait --for=delete pod/prestop-hook -n $NAMESPACE --timeout=60s
           echo "Pod fully terminated after preStop hook completed"

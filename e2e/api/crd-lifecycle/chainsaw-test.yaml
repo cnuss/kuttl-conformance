@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: crd-lifecycle
 spec:
+  description: Validates CRD creation, custom resource CRUD operations, and CRD cleanup
   steps:
-  - name: step-00
+  - name: create-crd
     try:
     - apply:
         file: 00-install.yaml
@@ -21,7 +22,10 @@ spec:
               kind: TestWidget
     catch:
     - events: {}
-  - name: step-01
+    finally:
+    - script:
+        content: kubectl delete crd testwidgets.conformance.chainsaw.dev --ignore-not-found
+  - name: create-custom-resource
     try:
     - apply:
         file: 01-create-cr.yaml
@@ -29,7 +33,7 @@ spec:
         file: 01-assert.yaml
     catch:
     - events: {}
-  - name: step-02
+  - name: update-custom-resource
     try:
     - apply:
         file: 02-update-cr.yaml
@@ -37,7 +41,7 @@ spec:
         file: 02-assert.yaml
     catch:
     - events: {}
-  - name: step-03
+  - name: delete-and-cleanup
     try:
     - delete:
         ref:

@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: resource-requests-limits
 spec:
+  description: Validates CPU and memory resource requests and limits are applied to pod containers
   steps:
-  - name: step-00
+  - name: create-and-verify-resource-constraints
     try:
     - apply:
         file: 00-install.yaml

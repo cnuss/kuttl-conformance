@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: persistent-volume-claim
 spec:
+  description: Validates PersistentVolumeClaim binding and data persistence across pod mounts
   steps:
-  - name: step-00
+  - name: create-and-verify-pvc
     try:
     - apply:
         file: 00-install.yaml

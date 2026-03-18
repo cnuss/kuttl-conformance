@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: namespace-lifecycle
 spec:
+  description: Validates namespace creation, active status verification, and deletion
   steps:
-  - name: step-00
+  - name: create-namespace
     try:
     - script:
         content: kubectl create namespace chainsaw-ns-test-${NAMESPACE##*-}
@@ -16,7 +17,7 @@ spec:
           test "$status" = "Active"
     catch:
     - events: {}
-  - name: step-01
+  - name: delete-and-verify-namespace
     try:
     - script:
         content: kubectl delete namespace chainsaw-ns-test-${NAMESPACE##*-} --wait=true --timeout=60s

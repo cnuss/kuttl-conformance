@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: init-containers
 spec:
+  description: Validates init containers run to completion before the main container starts
   steps:
-  - name: step-00
+  - name: create-and-verify-init-containers
     try:
     - apply:
         file: 00-install.yaml

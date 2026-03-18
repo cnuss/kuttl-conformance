@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-events
 spec:
+  description: Validates pod lifecycle events are emitted (Scheduled, Pull, Created, Started)
   steps:
-  - name: step-00
+  - name: create-pod-and-verify-events
     try:
     - apply:
         file: 00-install.yaml

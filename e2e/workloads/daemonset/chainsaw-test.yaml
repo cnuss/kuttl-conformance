@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: daemonset
 spec:
+  description: Validates DaemonSet schedules one pod per node and reaches ready state
   steps:
-  - name: step-00
+  - name: create-and-verify-daemonset
     try:
     - apply:
         file: 00-install.yaml

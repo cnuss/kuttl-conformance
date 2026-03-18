@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: node-affinity
 spec:
+  description: Validates required and preferred node affinity scheduling constraints
   steps:
-  - name: step-00
+  - name: verify-required-affinity
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-preferred-affinity
     try:
     - apply:
         file: 01-install.yaml

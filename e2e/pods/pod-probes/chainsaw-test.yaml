@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-probes
 spec:
+  description: Validates liveness, readiness, and startup probe configurations and health check behavior
   steps:
-  - name: step-00
+  - name: verify-liveness-probe
     try:
     - apply:
         file: 00-install.yaml
@@ -15,7 +16,7 @@ spec:
     - podLogs:
         name: liveness-http
         tail: 20
-  - name: step-01
+  - name: verify-readiness-probe
     try:
     - apply:
         file: 01-install.yaml
@@ -25,7 +26,7 @@ spec:
     - podLogs:
         name: readiness-file
         tail: 20
-  - name: step-02
+  - name: verify-startup-probe
     try:
     - apply:
         file: 02-install.yaml

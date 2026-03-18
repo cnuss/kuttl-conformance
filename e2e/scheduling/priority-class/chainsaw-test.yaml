@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: priority-class
 spec:
+  description: Validates PriorityClass assignment and priority value propagation to pods
   steps:
-  - name: step-00
+  - name: create-and-verify-priority
     try:
     - apply:
         file: 00-install.yaml
@@ -18,3 +19,6 @@ spec:
           test "$priority" -eq 1000
     catch:
     - events: {}
+    finally:
+    - script:
+        content: kubectl delete priorityclass test-priority --ignore-not-found

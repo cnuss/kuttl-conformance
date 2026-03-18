@@ -36,6 +36,7 @@ kind: Ingress
 metadata:
   name: web-ingress
 spec:
+  ingressClassName: nginx
   rules:
     - host: web.example.com
       http:

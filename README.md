@@ -99,6 +99,7 @@ Declarative end-to-end tests for core Kubernetes functionality using [Chainsaw](
 
 - `kubectl` configured with cluster access
 - [chainsaw](https://kyverno.github.io/chainsaw/) v0.2.14+ — installed automatically by `make install-chainsaw`
+- [jq](https://jqlang.github.io/jq/) — used by `make matrix` to build the test suite list
 - A running Kubernetes cluster (Kind, k3s, minikube, etc.)
 
 ## Running Tests

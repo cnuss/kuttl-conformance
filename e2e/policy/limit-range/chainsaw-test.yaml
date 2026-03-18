@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: limit-range
 spec:
+  description: Validates LimitRange injects default resource limits into pods that omit them
   steps:
-  - name: step-00
+  - name: create-limit-range
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-defaults-injected
     try:
     - apply:
         file: 01-create-pod.yaml

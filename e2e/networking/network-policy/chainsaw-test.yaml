@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: network-policy
 spec:
+  description: Validates NetworkPolicy resource creation and ingress/egress rule specification
   steps:
-  - name: step-00
+  - name: create-and-verify-network-policy
     try:
     - apply:
         file: 00-install.yaml

@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: endpoint-slices
 spec:
+  description: Validates EndpointSlice creation and endpoint population for a Service
   steps:
-  - name: step-00
+  - name: create-service-and-pods
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-endpoint-slices
     try:
     - script:
         content: |

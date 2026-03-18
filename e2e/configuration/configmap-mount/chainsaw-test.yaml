@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: configmap-mount
 spec:
+  description: Validates ConfigMap volume mount exposes data to pods as files
   steps:
-  - name: step-00
+  - name: create-and-verify-configmap-mount
     try:
     - apply:
         file: 00-install.yaml

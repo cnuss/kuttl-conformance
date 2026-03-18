@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: volume-types
 spec:
+  description: Validates emptyDir, configMap, secret, downwardAPI, and projected volume types and their read-only enforcement
   steps:
-  - name: step-00
+  - name: create-and-verify-volume-types
     try:
     - apply:
         file: 00-install.yaml

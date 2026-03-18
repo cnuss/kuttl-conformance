@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: deployment-lifecycle
 spec:
+  description: Validates deployment creation, scaling, and rolling update behavior
   steps:
-  - name: step-00
+  - name: create-deployment
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: scale-deployment
     try:
     - apply:
         file: 01-scale.yaml
@@ -21,7 +22,7 @@ spec:
         file: 01-assert.yaml
     catch:
     - events: {}
-  - name: step-02
+  - name: rolling-update
     try:
     - apply:
         file: 02-rolling-update.yaml

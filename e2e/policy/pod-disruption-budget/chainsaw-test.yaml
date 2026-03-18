@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-disruption-budget
 spec:
+  description: Validates PodDisruptionBudget creation and availability tracking for a Deployment
   steps:
-  - name: step-00
+  - name: create-and-verify-pdb
     try:
     - apply:
         file: 00-install.yaml

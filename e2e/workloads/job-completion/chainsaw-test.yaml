@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: job-completion
 spec:
+  description: Validates Job runs to successful completion with expected completions count
   steps:
-  - name: step-00
+  - name: create-and-verify-job-completion
     try:
     - apply:
         file: 00-install.yaml

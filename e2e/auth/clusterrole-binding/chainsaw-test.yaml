@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: clusterrole-binding
 spec:
+  description: Validates ClusterRole and ClusterRoleBinding grant cross-namespace access to a ServiceAccount
   steps:
-  - name: step-00
+  - name: create-rbac-resources
     try:
     - script:
         content: |
@@ -47,7 +48,12 @@ spec:
           kubectl get clusterrolebinding ns-lister-binding-$NAMESPACE
     catch:
     - events: {}
-  - name: step-01
+    finally:
+    - script:
+        content: kubectl delete clusterrole ns-lister-role-$NAMESPACE --ignore-not-found
+    - script:
+        content: kubectl delete clusterrolebinding ns-lister-binding-$NAMESPACE --ignore-not-found
+  - name: verify-access
     try:
     - apply:
         file: 01-verify-access.yaml
@@ -57,7 +63,12 @@ spec:
     - podLogs:
         name: ns-lister-verifier
         tail: 30
-  - name: step-02
+    finally:
+    - script:
+        content: kubectl delete clusterrole ns-lister-role-$NAMESPACE --ignore-not-found
+    - script:
+        content: kubectl delete clusterrolebinding ns-lister-binding-$NAMESPACE --ignore-not-found
+  - name: cleanup-cluster-scoped-resources
     try:
     - script:
         content: |

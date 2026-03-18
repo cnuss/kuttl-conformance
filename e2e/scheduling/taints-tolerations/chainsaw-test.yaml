@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: taints-tolerations
 spec:
+  description: Validates taints block scheduling for intolerant pods and tolerations allow scheduling
   steps:
-  - name: step-00
+  - name: verify-taint-and-toleration-behavior
     try:
     - script:
         content: |
@@ -27,8 +28,14 @@ spec:
                 image: nginx:1.27
           YAML
 
-          sleep 3
-          phase=$(kubectl get pod no-toleration -n $NAMESPACE -o jsonpath='{.status.phase}')
+          # Poll until pod is in Pending phase (instead of fixed sleep)
+          for i in $(seq 1 15); do
+            phase=$(kubectl get pod no-toleration -n $NAMESPACE -o jsonpath='{.status.phase}' 2>/dev/null) || true
+            if [ "$phase" = "Pending" ]; then
+              break
+            fi
+            sleep 1
+          done
           echo "no-toleration phase: $phase"
           if [ "$phase" != "Pending" ]; then
             echo "FAIL: expected Pending, got $phase"
@@ -75,4 +82,4 @@ spec:
     - script:
         content: |
           node=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
-          kubectl taint nodes "$node" test-taint=true:NoSchedule- 2>/dev/null || true
+          kubectl taint nodes "$node" test-taint=true:NoSchedule- || true

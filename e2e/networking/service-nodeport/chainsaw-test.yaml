@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: service-nodeport
 spec:
+  description: Validates NodePort Service allocates a port in the valid range and populates endpoints
   steps:
-  - name: step-00
+  - name: create-nodeport-service
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-nodeport-and-endpoints
     try:
     - script:
         content: |

@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: horizontal-pod-autoscaler
 spec:
+  description: Validates HorizontalPodAutoscaler creation and target reference to a Deployment
   steps:
-  - name: step-00
+  - name: create-and-verify-hpa
     try:
     - apply:
         file: 00-install.yaml

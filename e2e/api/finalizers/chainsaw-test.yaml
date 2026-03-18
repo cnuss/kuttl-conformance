@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: finalizers
 spec:
+  description: Validates that finalizers block resource deletion until removed
   steps:
-  - name: step-00
+  - name: create-finalized-resource
     try:
     - apply:
         file: 00-install.yaml
@@ -19,7 +20,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-finalizer-blocks-deletion
     try:
     - script:
         content: kubectl delete configmap finalized-config -n $NAMESPACE --wait=false
@@ -33,7 +34,7 @@ spec:
           test -n "$ts"
     catch:
     - events: {}
-  - name: step-02
+  - name: remove-finalizer-and-verify-deletion
     try:
     - script:
         content: |
@@ -42,4 +43,4 @@ spec:
           kubectl wait --for=delete configmap/finalized-config -n $NAMESPACE --timeout=30s
     cleanup:
     - script:
-        content: kubectl patch configmap finalized-config -n $NAMESPACE --type=merge -p '{"metadata":{"finalizers":[]}}' 2>/dev/null || true
+        content: kubectl patch configmap finalized-config -n $NAMESPACE --type=merge -p '{"metadata":{"finalizers":[]}}' || true
