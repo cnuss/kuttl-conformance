@@ -4,7 +4,8 @@ kind: Configuration
 metadata:
   name: configuration
 spec:
-  template: false
+  templating:
+    enabled: false
   timeouts:
     apply: 30s
     assert: 60s
