@@ -14,9 +14,3 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: cleanup-hostpath
-    try:
-    - script:
-        content: |
-          node=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
-          docker exec "$node" rm -rf /tmp/chainsaw-hostpath-test
