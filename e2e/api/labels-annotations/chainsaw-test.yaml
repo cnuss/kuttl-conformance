@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: labels-annotations
 spec:
+  description: Validates label and annotation CRUD operations and label-based pod discovery
   steps:
-  - name: step-00
+  - name: create-labeled-pod
     try:
     - apply:
         file: 00-install.yaml
@@ -15,7 +16,7 @@ spec:
     - podLogs:
         name: labeled-pod
         tail: 20
-  - name: step-01
+  - name: add-labels-and-annotations
     try:
     - script:
         content: |
@@ -28,7 +29,7 @@ spec:
     - podLogs:
         name: labeled-pod
         tail: 20
-  - name: step-02
+  - name: verify-label-selectors
     try:
     - script:
         content: |

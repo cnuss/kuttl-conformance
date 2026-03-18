@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: cronjob-scheduling
 spec:
+  description: Validates CronJob triggers Job creation on schedule
   steps:
-  - name: step-00
+  - name: create-cronjob-and-verify-job
     try:
     - apply:
         file: 00-install.yaml

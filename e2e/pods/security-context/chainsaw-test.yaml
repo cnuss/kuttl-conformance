@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: security-context
 spec:
+  description: Validates pod and container security contexts including runAsUser, readOnlyRootFilesystem, and privilege drop
   steps:
-  - name: step-00
+  - name: verify-runas-user
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-readonly-rootfs
     try:
     - apply:
         file: 01-install.yaml
@@ -21,7 +22,7 @@ spec:
         file: 01-assert.yaml
     catch:
     - events: {}
-  - name: step-02
+  - name: verify-privilege-drop
     try:
     - apply:
         file: 02-install.yaml

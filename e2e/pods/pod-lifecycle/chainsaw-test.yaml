@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-lifecycle
 spec:
+  description: Validates pod lifecycle phases from creation through deletion
   steps:
-  - name: step-00
+  - name: create-and-verify-running
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: delete-and-verify-gone
     try:
     - delete:
         ref:

@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: rbac
 spec:
+  description: Validates Role and RoleBinding restrict ServiceAccount access to permitted resources only
   steps:
-  - name: step-00
+  - name: create-rbac-resources
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-access-control
     try:
     - apply:
         file: 01-verify-access.yaml

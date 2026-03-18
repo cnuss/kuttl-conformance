@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: ingress
 spec:
+  description: Validates Ingress resource creation with host and path routing rules
   steps:
-  - name: step-00
+  - name: create-and-verify-ingress
     try:
     - apply:
         file: 00-install.yaml

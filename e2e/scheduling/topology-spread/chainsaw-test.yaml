@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: topology-spread
 spec:
+  description: Validates topology spread constraints distribute pods evenly across topology domains
   steps:
-  - name: step-00
+  - name: create-and-verify-topology-spread
     try:
     - apply:
         file: 00-install.yaml

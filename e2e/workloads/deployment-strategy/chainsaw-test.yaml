@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: deployment-strategy
 spec:
+  description: Validates Recreate and RollingUpdate deployment strategies produce correct rollout behavior
   steps:
-  - name: step-00
+  - name: create-recreate-deployment
     try:
     - apply:
         file: 00-install.yaml
@@ -16,7 +17,7 @@ spec:
         selector: app=nginx-recreate
         tail: 20
     - events: {}
-  - name: step-01
+  - name: update-recreate-deployment
     try:
     - apply:
         file: 01-update.yaml
@@ -42,7 +43,7 @@ spec:
         selector: app=nginx-recreate
         tail: 20
     - events: {}
-  - name: step-02
+  - name: create-rolling-deployment
     try:
     - apply:
         file: 02-install-rolling.yaml
@@ -53,7 +54,7 @@ spec:
         selector: app=nginx-rolling
         tail: 20
     - events: {}
-  - name: step-03
+  - name: update-rolling-deployment
     try:
     - apply:
         file: 03-update-rolling.yaml

@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: statefulset
 spec:
+  description: Validates StatefulSet ordered pod creation, stable identity, and headless service DNS
   steps:
-  - name: step-00
+  - name: create-statefulset
     try:
     - apply:
         file: 00-install.yaml
@@ -15,7 +16,7 @@ spec:
     - podLogs:
         selector: app=nginx-sts
         tail: 20
-  - name: step-01
+  - name: verify-stable-identity
     try:
     - script:
         content: |

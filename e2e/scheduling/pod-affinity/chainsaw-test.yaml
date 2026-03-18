@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-affinity
 spec:
+  description: Validates pod affinity co-locates pods and anti-affinity keeps them on separate nodes
   steps:
-  - name: step-00
+  - name: create-target-pod
     try:
     - apply:
         file: 00-install.yaml
@@ -13,7 +14,7 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: step-01
+  - name: verify-affinity-colocation
     try:
     - apply:
         file: 01-install.yaml
@@ -28,7 +29,7 @@ spec:
           test "$target_node" = "$affinity_node"
     catch:
     - events: {}
-  - name: step-02
+  - name: verify-anti-affinity
     try:
     - apply:
         file: 02-install.yaml

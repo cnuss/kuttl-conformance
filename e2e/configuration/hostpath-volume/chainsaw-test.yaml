@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: hostpath-volume
 spec:
+  description: Validates hostPath volume mounts expose host filesystem paths to pods
   steps:
-  - name: step-00
+  - name: create-and-verify-hostpath
     try:
     - apply:
         file: 00-install.yaml
@@ -13,3 +14,9 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
+  - name: cleanup-hostpath
+    try:
+    - script:
+        content: |
+          node=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
+          docker exec "$node" rm -rf /tmp/chainsaw-hostpath-test

@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: pod-logs
 spec:
+  description: Validates pod stdout logs are retrievable and contain expected output lines
   steps:
-  - name: step-00
+  - name: create-pod-and-verify-logs
     try:
     - apply:
         file: 00-install.yaml

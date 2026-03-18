@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: secret-mount
 spec:
+  description: Validates Secret volume mount exposes secret data as read-only files in pods
   steps:
-  - name: step-00
+  - name: create-and-verify-secret-mount
     try:
     - apply:
         file: 00-install.yaml

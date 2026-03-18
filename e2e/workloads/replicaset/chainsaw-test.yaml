@@ -4,8 +4,9 @@ kind: Test
 metadata:
   name: replicaset
 spec:
+  description: Validates ReplicaSet maintains desired replica count and supports scaling
   steps:
-  - name: step-00
+  - name: create-replicaset
     try:
     - apply:
         file: 00-install.yaml
@@ -16,7 +17,7 @@ spec:
         selector: app=nginx-rs
         tail: 20
     - events: {}
-  - name: step-01
+  - name: scale-replicaset
     try:
     - apply:
         file: 01-scale.yaml
