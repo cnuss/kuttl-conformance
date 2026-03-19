@@ -11,6 +11,13 @@ spec:
     - script:
         content: |
           set -e
+
+          # Wait for default ServiceAccount to be provisioned
+          for i in $(seq 1 10); do
+            if kubectl get sa default -n $NAMESPACE >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+
           # Discover the actual node hostname label — works on any cluster
           hostname=$(kubectl get nodes -o jsonpath='{.items[0].metadata.labels.kubernetes\.io/hostname}')
           cat <<EOF | kubectl apply -n $NAMESPACE -f -

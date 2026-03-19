@@ -13,6 +13,12 @@ spec:
           set -e
           node=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
 
+          # Wait for default ServiceAccount to be provisioned
+          for i in $(seq 1 10); do
+            if kubectl get sa default -n $NAMESPACE >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+
           # Add taint
           kubectl taint nodes "$node" test-taint=true:NoSchedule
 
