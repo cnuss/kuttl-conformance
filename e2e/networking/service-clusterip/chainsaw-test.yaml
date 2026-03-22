@@ -23,3 +23,12 @@ spec:
           test "$addr_count" -eq 2
     catch:
     - events: {}
+  - name: verify-connectivity
+    try:
+    - script:
+        content: |
+          set -e
+          kubectl run wget-test --rm -i --restart=Never --image=busybox:1.37 -n $NAMESPACE -- \
+            wget -qO- --timeout=10 http://nginx-clusterip.$NAMESPACE:80
+    catch:
+    - events: {}
