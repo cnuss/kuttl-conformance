@@ -20,15 +20,12 @@ spec:
         file: 00-install.yaml
     - assert:
         file: 00-assert.yaml
-    - assert:
-        resource:
-          apiVersion: v1
-          kind: Endpoints
-          metadata:
-            name: nginx-svc
-          subsets:
-          - addresses:
-            - ip: "(*)"
+    - script:
+        content: |
+          set -e
+          addr_count=$(kubectl get endpoints nginx-svc -n $NAMESPACE -o jsonpath='{.subsets[0].addresses[*].ip}' | wc -w)
+          echo "Endpoint address count: $addr_count"
+          test "$addr_count" -eq 1
     catch:
     - script:
         content: |
