@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lifecycle-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: writer
+spec:
+  restartPolicy: Never
+  containers:
+    - name: writer
+      image: busybox:1.37
+      command: ["sh", "-c"]
+      args:
+        - |
+          set -e
+          echo "persistent-data" > /data/test.txt
+          cat /data/test.txt
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: lifecycle-pvc
