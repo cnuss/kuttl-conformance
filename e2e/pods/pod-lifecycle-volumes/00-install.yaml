@@ -24,11 +24,15 @@ spec:
       lifecycle:
         postStart:
           exec:
-            command: ["sh", "-c", "date >> /data/started.txt"]
+            command: ["sh", "-c", "date >> /pvc/started.txt && date >> /scratch/started.txt"]
       volumeMounts:
         - name: data
-          mountPath: /data
+          mountPath: /pvc
+        - name: scratch
+          mountPath: /scratch
   volumes:
     - name: data
       persistentVolumeClaim:
         claimName: test-pvc
+    - name: scratch
+      emptyDir: {}
