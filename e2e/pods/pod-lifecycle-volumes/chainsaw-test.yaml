@@ -5,6 +5,7 @@ metadata:
   name: pod-lifecycle-volumes
 spec:
   description: Validates pod lifecycle with a persistent volume
+  namespace: chainsaw-pod-lifecycle-volumes
   steps:
   - name: create-and-verify-running
     try:
