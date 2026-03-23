@@ -4,7 +4,7 @@ Declarative end-to-end tests for core Kubernetes functionality using [Chainsaw](
 
 ## Test Suites
 
-### Pods (8 tests)
+### Pods (9 tests)
 
 | Test | Description |
 |------|-------------|
@@ -16,6 +16,7 @@ Declarative end-to-end tests for core Kubernetes functionality using [Chainsaw](
 | `dns-config` | Custom DNS config and dnsPolicy: None |
 | `restart-policy` | Never, OnFailure, and Always restart behaviors |
 | `resource-requests-limits` | CPU/memory requests and limits, unschedulable pods |
+| `pod-lifecycle-volumes` | Data persistence across pod mounts via PVC |
 
 ### Workloads (7 tests)
 
