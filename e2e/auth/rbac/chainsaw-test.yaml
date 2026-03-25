@@ -16,6 +16,16 @@ spec:
     - events: {}
   - name: verify-access-control
     try:
+    - script:
+        content: |
+          for i in $(seq 1 30); do
+            if kubectl get service kubernetes -n default -o yaml; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "kubernetes service not found after 30s"
+          exit 1
     - apply:
         file: 01-verify-access.yaml
     - assert:
