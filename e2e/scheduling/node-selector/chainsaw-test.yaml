@@ -20,8 +20,13 @@ spec:
         content: |
           set -e
 
-          # Discover the hostname label from the first Ready node
-          hostname=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.labels.kubernetes\.io/hostname}{"\t"}{range .status.conditions[*]}{.type}={.status}{"\t"}{end}{"\n"}{end}' | grep 'Ready=True' | head -1 | cut -f1)
+          # Wait for a Ready node, then discover its hostname label
+          for i in $(seq 1 30); do
+            hostname=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.labels.kubernetes\.io/hostname}{"\t"}{range .status.conditions[*]}{.type}={.status}{"\t"}{end}{"\n"}{end}' | grep 'Ready=True' | head -1 | cut -f1)
+            if [ -n "$hostname" ]; then break; fi
+            sleep 1
+          done
+          test -n "$hostname" || { echo "no Ready node found after 30s"; exit 1; }
           cat <<EOF | kubectl apply -n $NAMESPACE -f -
           apiVersion: v1
           kind: Pod
