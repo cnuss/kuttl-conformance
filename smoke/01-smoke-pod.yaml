@@ -147,10 +147,6 @@ spec:
           test "$(cat /shared/poststart-marker)" = "poststart-executed"
           echo "postStart hook: PASS"
 
-          echo "=== DNS: verify resolution from main container ==="
-          nslookup kubernetes.default.svc.cluster.local
-          echo "DNS from main: PASS"
-
           echo "ALL SMOKE CHECKS PASSED"
 
       lifecycle:

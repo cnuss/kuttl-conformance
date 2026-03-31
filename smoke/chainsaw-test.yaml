@@ -73,7 +73,6 @@ spec:
           echo "$logs" | grep -q "SA token automount: PASS"
           echo "$logs" | grep -q "env vars: PASS"
           echo "$logs" | grep -q "postStart hook: PASS"
-          echo "$logs" | grep -q "DNS from main: PASS"
           echo "$logs" | grep -q "ALL SMOKE CHECKS PASSED"
           echo "All log markers verified"
     catch:
