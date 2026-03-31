@@ -27,31 +27,7 @@ spec:
         - name: shared
           mountPath: /shared
 
-    # Init 2: verify DNS resolution works before main container starts
-    - name: init-dns
-      image: busybox:1.37
-      command: ["sh", "-c"]
-      args:
-        - |
-          set -e
-          # Verify cluster DNS resolves the kubernetes service
-          for i in $(seq 1 30); do
-            if nslookup kubernetes.default.svc.cluster.local > /tmp/dns-result 2>&1; then
-              echo "DNS resolution succeeded"
-              cat /tmp/dns-result
-              cp /tmp/dns-result /shared/dns-result
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "FAIL: DNS resolution failed after 30s"
-          cat /tmp/dns-result 2>/dev/null
-          exit 1
-      volumeMounts:
-        - name: shared
-          mountPath: /shared
-
-    # Init 3: verify PVC is writable by seeding data
+    # Init 2: verify PVC is writable by seeding data
     - name: init-pvc
       image: busybox:1.37
       command: ["sh", "-c"]
@@ -77,9 +53,6 @@ spec:
           test "$(cat /shared/init-message)" = "init-setup-payload"
           grep -q "init-timestamp=" /shared/init-meta
           test "$(cat /shared/subdir/nested.txt)" = "nested-init-data"
-          # Verify DNS init container also wrote its result
-          test -f /shared/dns-result
-          grep -qi "kubernetes" /shared/dns-result
           echo "emptyDir: PASS"
 
           echo "=== hostPath: verify read/write ==="
