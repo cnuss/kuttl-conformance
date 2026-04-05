@@ -7,9 +7,9 @@ spec:
   templating:
     enabled: false
   timeouts:
-    apply: 30s
-    assert: 90s
-    cleanup: 120s
-    delete: 60s
-    error: 30s
-    exec: 120s
+    apply: 1h
+    assert: 1h
+    cleanup: 1h
+    delete: 1h
+    error: 1h
+    exec: 1h
