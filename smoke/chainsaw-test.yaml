@@ -15,12 +15,21 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
-  - name: create-resources
-    description: Create SA, Role, RoleBinding, ConfigMap, Secret, PVC, and Deployment
+  - name: configmap-subpath
+    description: Mount a ConfigMap key via subPath and verify the deployment becomes ready
     try:
     - apply:
         file: 01-resources.yaml
     - assert:
         file: 01-assert.yaml
+    catch:
+    - events: {}
+  - name: create-resources
+    description: Create SA, Role, RoleBinding, ConfigMap, Secret, PVC, and Deployment
+    try:
+    - apply:
+        file: 99-resources.yaml
+    - assert:
+        file: 99-assert.yaml
     catch:
     - events: {}
