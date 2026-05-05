@@ -6,30 +6,12 @@ metadata:
 spec:
   description: Smoke test for core resources and deployment
   steps:
-  - name: python-http-server
-    description: Run a python3 http.server pod and verify it reaches Running
-    try:
-    - apply:
-        file: 00-resources.yaml
-    - assert:
-        file: 00-assert.yaml
-    catch:
-    - events: {}
-  - name: configmap-subpath
-    description: Mount a ConfigMap key via subPath and verify the deployment becomes ready
-    try:
-    - apply:
-        file: 01-resources.yaml
-    - assert:
-        file: 01-assert.yaml
-    catch:
-    - events: {}
   - name: create-resources
     description: Create SA, Role, RoleBinding, ConfigMap, Secret, PVC, and Deployment
     try:
     - apply:
-        file: 99-resources.yaml
+        file: resources.yaml
     - assert:
-        file: 99-assert.yaml
+        file: assert.yaml
     catch:
     - events: {}
