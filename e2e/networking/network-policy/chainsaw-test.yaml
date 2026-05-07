@@ -14,3 +14,30 @@ spec:
         file: 00-assert.yaml
     catch:
     - events: {}
+  - name: verify-allowed-traffic
+    try:
+    - script:
+        content: |
+          set -e
+          WEB_IP=$(kubectl get pods -n $NAMESPACE -l app=web -o jsonpath='{.items[0].status.podIP}')
+          test -n "$WEB_IP" || { echo "ERROR: no pod IP found for app=web"; exit 1; }
+          kubectl run allowed-client --rm -i --restart=Never --labels=role=client \
+            --image=busybox:1.37 -n $NAMESPACE -- \
+            wget -qO- --timeout=10 http://$WEB_IP:80
+    catch:
+    - events: {}
+  - name: verify-denied-traffic
+    try:
+    - script:
+        content: |
+          set -e
+          WEB_IP=$(kubectl get pods -n $NAMESPACE -l app=web -o jsonpath='{.items[0].status.podIP}')
+          test -n "$WEB_IP" || { echo "ERROR: no pod IP found for app=web"; exit 1; }
+          if kubectl run denied-client --rm -i --restart=Never \
+            --image=busybox:1.37 -n $NAMESPACE -- \
+            wget -qO- --timeout=5 http://$WEB_IP:80 2>/dev/null; then
+            echo "ERROR: denied pod was able to connect"
+            exit 1
+          fi
+    catch:
+    - events: {}

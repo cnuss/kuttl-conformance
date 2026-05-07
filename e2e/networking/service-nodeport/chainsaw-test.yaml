@@ -29,3 +29,14 @@ spec:
           test "$addr_count" -eq 1
     catch:
     - events: {}
+  - name: verify-connectivity
+    try:
+    - script:
+        content: |
+          set -e
+          NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+          NODE_PORT=$(kubectl get svc nginx-nodeport -n $NAMESPACE -o jsonpath='{.spec.ports[0].nodePort}')
+          kubectl run wget-test --rm -i --restart=Never --image=busybox:1.37 -n $NAMESPACE -- \
+            wget -qO- --timeout=10 http://$NODE_IP:$NODE_PORT
+    catch:
+    - events: {}

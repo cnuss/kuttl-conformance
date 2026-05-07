@@ -23,3 +23,17 @@ spec:
           test "$addr_count" -eq 2
     catch:
     - events: {}
+  - name: verify-dns-and-connectivity
+    try:
+    - script:
+        content: |
+          set -e
+          kubectl run dns-test --rm -i --restart=Never --image=busybox:1.37 -n $NAMESPACE -- \
+            sh -c 'nslookup nginx-headless 2>/dev/null | grep -q "Name:"'
+    - script:
+        content: |
+          set -e
+          kubectl run wget-test --rm -i --restart=Never --image=busybox:1.37 -n $NAMESPACE -- \
+            wget -qO- --timeout=10 http://nginx-headless.$NAMESPACE:80
+    catch:
+    - events: {}
