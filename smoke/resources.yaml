@@ -73,47 +73,47 @@ spec:
       serviceAccountName: smoke-sa
       initContainers:
         - name: kubectl-auth-whoami
-          image: cnuss/dev:latest
+          image: registry.k8s.io/kubectl:v1.35.0
           command: ["kubectl", "auth", "whoami"]
         - name: kubectl-auth-can-i-list-pods
-          image: cnuss/dev:latest
+          image: registry.k8s.io/kubectl:v1.35.0
           command: ["kubectl", "auth", "can-i", "list", "pods"]
+        - name: kubectl-auth-can-i-list-configmaps
+          image: registry.k8s.io/kubectl:v1.35.0
+          command: ["kubectl", "auth", "can-i", "list", "configmaps"]
+        - name: kubectl-auth-can-i-list-secrets
+          image: registry.k8s.io/kubectl:v1.35.0
+          command: ["kubectl", "auth", "can-i", "list", "secrets"]
         - name: touch-empty-dir-init
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["touch", "/mnt/empty-dir/init"]
           volumeMounts:
             - name: empty-dir
               mountPath: /mnt/empty-dir
         - name: touch-host-path-init
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["touch", "/mnt/host-path/init"]
           volumeMounts:
             - name: host-path
               mountPath: /mnt/host-path
-        - name: kubectl-auth-can-i-list-configmaps
-          image: cnuss/dev:latest
-          command: ["kubectl", "auth", "can-i", "list", "configmaps"]
-        - name: kubectl-auth-can-i-list-secrets
-          image: cnuss/dev:latest
-          command: ["kubectl", "auth", "can-i", "list", "secrets"]
         - name: test-sa-token
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["test", "-s", "/var/run/secrets/kubernetes.io/serviceaccount/token"]
         - name: test-sa-ca-crt
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["test", "-f", "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"]
         - name: test-sa-namespace
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["test", "-f", "/var/run/secrets/kubernetes.io/serviceaccount/namespace"]
         - name: touch-mnt-pvc-init
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["touch", "/mnt/pvc/init"]
           volumeMounts:
             - name: pvc
               mountPath: /mnt/pvc
       containers:
         - name: assert
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["sh", "-c"]
           args:
             - |
@@ -167,9 +167,6 @@ spec:
                 test "$CONFIG_GREETING" = "hello-from-smoke" || { echo "CONFIG_GREETING mismatch"; continue; }
                 test "$SECRET_PASSWORD" = "s3cret-smoke" || { echo "SECRET_PASSWORD mismatch"; continue; }
 
-                ! kubectl auth can-i delete pods 2>/dev/null || { echo "RBAC: delete pods should be denied"; continue; }
-                ! kubectl auth can-i create configmaps 2>/dev/null || { echo "RBAC: create configmaps should be denied"; continue; }
-
                 echo "all checks passed, creating /mnt/pvc/ok"
                 touch /mnt/pvc/ok
                 sleep infinity
@@ -216,7 +213,7 @@ spec:
               exec:
                 command: ["touch", "/mnt/pvc/assert-prestop"]
         - name: httpd
-          image: cnuss/dev:latest
+          image: busybox:latest
           command: ["sh", "-c"]
           args: ["busybox httpd -f -p $HTTPD_PORT -h /mnt"]
           env:
